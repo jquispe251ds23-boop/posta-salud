@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Paciente;
 use App\Http\Requests\StorePacienteRequest;
 use App\Http\Requests\UpdatePacienteRequest;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
@@ -50,30 +51,32 @@ class PacienteController extends Controller
      */
     public function show(Paciente $paciente)
     {
-        //
+        return view('pacientes.show', compact('paciente'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Paciente $paciente)
     {
-        //
+        return view('pacientes.edit', compact('paciente'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdatePacienteRequest $request, Paciente $paciente)
     {
-        //
+        $paciente->update($request->validated());
+
+        return redirect()->route('pacientes.show', $paciente)
+            ->with('ok', 'Datos del paciente actualizados correctamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Paciente $paciente)
     {
-        //
+        try {
+            $paciente->delete();
+
+            return redirect()->route('pacientes.index')
+                ->with('ok', 'Paciente eliminado correctamente.');
+        } catch (QueryException $e) {
+            return redirect()->route('pacientes.show', $paciente)
+                ->with('error', 'No se puede eliminar el paciente porque tiene registros asociados.');
+        }
     }
 }
