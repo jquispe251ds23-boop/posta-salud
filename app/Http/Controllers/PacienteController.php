@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Paciente;
 use App\Http\Requests\StorePacienteRequest;
 use App\Http\Requests\UpdatePacienteRequest;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
@@ -69,14 +68,16 @@ class PacienteController extends Controller
 
     public function destroy(Paciente $paciente)
     {
-        try {
-            $paciente->delete();
-
-            return redirect()->route('pacientes.index')
-                ->with('ok', 'Paciente eliminado correctamente.');
-        } catch (QueryException $e) {
-            return redirect()->route('pacientes.show', $paciente)
-                ->with('error', 'No se puede eliminar el paciente porque tiene registros asociados.');
+        if ($paciente->citas()->exists()) {
+            return back()->with(
+                'error',
+                'No se puede eliminar: el paciente tiene citas registradas.'
+            );
         }
+
+        $paciente->delete();
+
+        return redirect()->route('pacientes.index')
+            ->with('ok', 'Paciente eliminado.');
     }
 }
