@@ -20,6 +20,16 @@
             gap: 1rem;
             align-items: center;
         }
+
+        .estado-activo {
+            background: #e6f2ea;
+            color: #2f7d52;
+        }
+
+        .estado-inactivo {
+            background: #f6e3e3;
+            color: #b3261e;
+        }
     </style>
 </head>
 
