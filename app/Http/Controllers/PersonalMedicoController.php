@@ -6,6 +6,7 @@ use App\Models\PersonalMedico;
 use App\Http\Requests\StorePersonalMedicoRequest;
 use App\Http\Requests\UpdatePersonalMedicoRequest;
 use Illuminate\Http\Request;
+use App\Models\User;
 class PersonalMedicoController extends Controller
 {
     /**
@@ -44,15 +45,20 @@ class PersonalMedicoController extends Controller
      */
     public function create()
     {
-        //
+        $cuentasDisponibles = User::where('rol', 'personal_medico')
+            ->whereDoesntHave('personalMedico')
+            ->orderBy('name')
+            ->get();
+
+        return view('personal-medico.create', compact('cuentasDisponibles'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePersonalMedicoRequest $request)
     {
-        //
+        $medico = PersonalMedico::create($request->validated());
+
+        return redirect()->route('personal-medico.show', $medico)
+            ->with('ok', 'Profesional registrado correctamente.');
     }
 
     /**
