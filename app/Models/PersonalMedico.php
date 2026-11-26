@@ -14,8 +14,20 @@ class PersonalMedico extends Model
     protected $table = 'personal_medico';
 
     protected $fillable = [
-        'user_id', 'dni', 'nombres', 'apellidos',
-        'especialidad', 'colegiatura', 'activo',
+        'user_id',
+        'dni',
+        'nombres',
+        'apellidos',
+        'especialidad',
+        'colegiatura',
+        'activo',
+    ];
+    public const ESPECIALIDADES = [
+        'Medicina general',
+        'Obstetricia',
+        'Enfermería',
+        'Odontología',
+        'Pediatría',
     ];
 
     protected function casts(): array
