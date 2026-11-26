@@ -58,4 +58,8 @@ class PersonalMedico extends Model
     {
         return $this->hasMany(Cita::class);
     }
+    public function nombreCompleto(): string
+    {
+        return trim("{$this->nombres} {$this->apellidos}");
+    }
 }

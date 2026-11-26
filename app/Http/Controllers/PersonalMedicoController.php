@@ -66,23 +66,44 @@ class PersonalMedicoController extends Controller
      */
     public function show(PersonalMedico $personalMedico)
     {
-        //
+        $personalMedico->load('user');
+        $personalMedico->loadCount('citas');
+
+        $proximasCitas = $personalMedico->citas()
+            ->with('paciente')
+            ->where('fecha_hora', '>=', now())
+            ->orderBy('fecha_hora')
+            ->limit(5)
+            ->get();
+
+        return view('personal-medico.show', [
+            'medico' => $personalMedico,
+            'proximasCitas' => $proximasCitas,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(PersonalMedico $personalMedico)
     {
-        //
+        $cuentasDisponibles = User::where('rol', 'personal_medico')
+            ->where(function ($q) use ($personalMedico) {
+                $q->whereDoesntHave('personalMedico')
+                    ->orWhere('id', $personalMedico->user_id);
+            })
+            ->orderBy('name')
+            ->get();
+
+        return view('personal-medico.edit', [
+            'medico' => $personalMedico,
+            'cuentasDisponibles' => $cuentasDisponibles,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdatePersonalMedicoRequest $request, PersonalMedico $personalMedico)
     {
-        //
+        $personalMedico->update($request->validated());
+
+        return redirect()->route('personal-medico.show', $personalMedico)
+            ->with('ok', 'Datos del profesional actualizados correctamente.');
     }
 
 }
